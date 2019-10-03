@@ -3,9 +3,13 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "concurrently": "^4.1.2",
+    "electron-builder": "^21.2.0",
+    "electron-is-dev": "^1.1.0",
     "react": "^16.10.1",
     "react-dom": "^16.10.1",
-    "react-scripts": "3.2.0"
+    "react-scripts": "3.2.0",
+    "wait-on": "^3.3.0"
   },
   "main": "src/main.js",
   "scripts": {
@@ -13,7 +17,7 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "electron": "electron ."
+    "electron": "concurrently \"SET BROWSER=none&&npm start\" \"wait-on http://localhost:3000 && electron .\""
   },
   "eslintConfig": {
     "extends": "react-app"
