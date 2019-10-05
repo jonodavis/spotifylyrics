@@ -1,7 +1,7 @@
 import React from 'react';
 import logo from './logo.svg';
 import './App.css';
-import secrets from './secrets';
+// import secrets from './secrets';
 
 function App() {
   return (
