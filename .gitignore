@@ -75,3 +75,5 @@ fabric.properties
 # .idea/misc.xml
 # *.ipr
 '.idea' 
+
+secrets.js
