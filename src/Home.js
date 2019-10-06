@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import './App.css'
 import secrets from './secrets'
 import SpotifyWebApi from 'spotify-web-api-js';
-import getLyrics from 'azlyrics'
+
 const spotifyApi = new SpotifyWebApi();
 
 
@@ -15,7 +15,7 @@ class Home extends Component {
             spotifyApi.setAccessToken(token);
         }
         this.state = {
-            loggedIn: token ? true : false,
+            loggedIn: !!token,
             nowPlaying: { name: 'Not Checked', albumArt: '', lyrics: '' }
         }
     }
@@ -24,7 +24,7 @@ class Home extends Component {
         let hashParams = {};
         let e, r = /([^&;=]+)=?([^&;]*)/g,
             q = window.location.hash.substring(1);
-        e = r.exec(q)
+        e = r.exec(q);
         while (e) {
             hashParams[e[1]] = decodeURIComponent(e[2]);
             e = r.exec(q);
@@ -41,20 +41,39 @@ class Home extends Component {
                     }
                 });
             })
-        this.getLyrics()
+            .then( () => {
+                this.searchSong();
+            })
+
     }
 
-    getLyrics() {
-        console.log(secrets.genius_token)
+    searchSong() {
+        console.log(secrets.genius_token);
+        console.log(this.state.nowPlaying);
         fetch(`https://api.genius.com/search?q=${this.state.nowPlaying.name}&access_token=${secrets.genius_token}`)
             .then(
                 (json) => {
                     return json.json()
-            }).then(
+                }).then(
+                    (response) => {
+                        console.log(response.response.hits[0].result.id);
+                        this.setState({
+                            nowPlaying: {
+                                ...this.state.nowPlaying,
+                                songId: response.response.hits[0].result.id
+                            }
+                        });
+                    }).then(() => {this.getLyrics()})
+    }
+
+    getLyrics() {
+        console.log(secrets.genius_token);
+        fetch(`https://api.genius.com/songs/${this.state.nowPlaying.songId}?access_token=${secrets.genius_token}`)
+            .then(
                 (response) => {
-                    console.log(response)
-                }
-            )
+                    console.log('success');
+                    return response.json()
+                }).then(response => console.log(response.response))
     }
 
     render() {
