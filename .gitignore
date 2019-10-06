@@ -77,3 +77,4 @@ fabric.properties
 '.idea' 
 
 secrets.json
+secrets.js

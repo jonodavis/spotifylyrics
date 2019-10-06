@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import './App.css'
+import secrets from './secrets'
 
 import SpotifyWebApi from 'spotify-web-api-js';
 const spotifyApi = new SpotifyWebApi();
@@ -14,7 +15,7 @@ class Home extends Component {
         }
         this.state = {
             loggedIn: token ? true : false,
-            nowPlaying: { name: 'Not Checked', albumArt: '' }
+            nowPlaying: { name: 'Not Checked', albumArt: '', lyrics: '' }
         }
     }
 
@@ -39,7 +40,22 @@ class Home extends Component {
                     }
                 });
             })
+        this.getLyrics()
     }
+
+    getLyrics() {
+        console.log(secrets.genius_token)
+        fetch(`https://api.genius.com/search?q=${this.state.nowPlaying.name}`, {mode: 'cors', headers: {"Authorization": `Bearer ${secrets.genius_token}`}})
+            .then(
+                (json) => {
+                    return json.json()
+            }).then(
+                (response) => {
+                    console.log(response)
+                }
+            )
+    }
+
     render() {
         return (
             <div className="App">
