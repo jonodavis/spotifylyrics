@@ -1,15 +1,22 @@
 import React from 'react';
 import logo from './logo.svg';
 import './App.css';
+import Nav from './Nav';
+import Entry from './Entry';
+import Home from './Home';
 
+import {BrowserRouter as Router, Switch, Route} from 'react-router-dom';
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <a href="http://localhost:8888" className="btn btn-primary" role="button">Login with Spotify!</a>
-      </header>
-    </div>
+      <Router>
+        <div className="App">
+            <Switch>
+                <Route path="/" exact component={Entry} />
+                <Route path="/entry" component={Entry} />
+                <Route path="/home" component={Home} />
+            </Switch>
+        </div>
+      </Router>
   );
 }
 
