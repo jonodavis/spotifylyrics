@@ -1,9 +1,10 @@
 import React, { Component } from 'react';
 import './App.css'
 import secrets from './secrets'
-
 import SpotifyWebApi from 'spotify-web-api-js';
+import getLyrics from 'azlyrics'
 const spotifyApi = new SpotifyWebApi();
+
 
 class Home extends Component {
     constructor(){
@@ -45,7 +46,7 @@ class Home extends Component {
 
     getLyrics() {
         console.log(secrets.genius_token)
-        fetch(`https://api.genius.com/search?q=${this.state.nowPlaying.name}`, {mode: 'cors', headers: {"Authorization": `Bearer ${secrets.genius_token}`}})
+        fetch(`https://api.genius.com/search?q=${this.state.nowPlaying.name}&access_token=${secrets.genius_token}`)
             .then(
                 (json) => {
                     return json.json()
