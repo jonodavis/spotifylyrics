@@ -76,4 +76,4 @@ fabric.properties
 # *.ipr
 '.idea' 
 
-secrets.js
+secrets.json
