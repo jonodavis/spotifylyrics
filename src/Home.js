@@ -2,6 +2,9 @@ import React, { Component } from 'react';
 import './App.css'
 import secrets from './secrets'
 import SpotifyWebApi from 'spotify-web-api-js';
+import cheerio from 'cheerio';
+
+import request from 'request';
 
 const spotifyApi = new SpotifyWebApi();
 
@@ -56,6 +59,7 @@ class Home extends Component {
                     return json.json()
                 }).then(
                     (response) => {
+                        console.log(response.response.hits[0]);
                         console.log(response.response.hits[0].result.id);
                         this.setState({
                             nowPlaying: {
@@ -63,10 +67,28 @@ class Home extends Component {
                                 songId: response.response.hits[0].result.id
                             }
                         });
-                    }).then(() => {this.getLyrics()})
+                        return response.response.hits[0].result.url
+                    }).then((url) => {this.scrapSong(url)})
     }
 
-    getLyrics() {
+    scrapSong(url) {
+        console.log(url);
+        console.log(this.state.nowPlaying);
+        //fix this hacky fix xd
+        request('https://cors-anywhere.herokuapp.com/' + url,function(err,res,body) {
+            console.log(this.state.nowPlaying);
+            let html = cheerio.load(body);
+            let scrapedLyrics = html('.lyrics').text().trim();
+            this.setState({
+                nowPlaying: {
+                    ...this.state.nowPlaying,
+                    scrapedLyrics: scrapedLyrics
+                }
+            });
+        }.bind(this))
+
+    }
+    getSong() {
         console.log(secrets.genius_token);
         fetch(`https://api.genius.com/songs/${this.state.nowPlaying.songId}?access_token=${secrets.genius_token}`)
             .then(
@@ -79,17 +101,32 @@ class Home extends Component {
     render() {
         return (
             <div className="App">
-                <div>
-                    Now Playing: { this.state.nowPlaying.name }
+                <div className="container">
+                    <div className="row">
+                        <div className="col">
+                            <div>
+                                Now Playing: { this.state.nowPlaying.name }
+                            </div>
+                            <div>
+                                <img src={this.state.nowPlaying.albumArt} style={{ height: 150 }}/>
+                            </div>
+                            <div>
+                                { this.state.loggedIn &&
+                                <button className="btn btn-info"  onClick={() => this.getNowPlaying()}>
+                                    Fetch Now Playing
+                                </button>
+                                }
+                            </div>
+                        </div>
+                        <div className="col">
+                            <div>
+                                {this.state.nowPlaying.scrapedLyrics}
+                            </div>
+                        </div>
+                    </div>
+
                 </div>
-                <div>
-                    <img src={this.state.nowPlaying.albumArt} style={{ height: 150 }}/>
-                </div>
-                { this.state.loggedIn &&
-                <button className="btn btn-info"  onClick={() => this.getNowPlaying()}>
-                    Fetch Now Playing
-                </button>
-                }
+
             </div>
         );
     }
