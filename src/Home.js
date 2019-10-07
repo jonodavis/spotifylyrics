@@ -20,7 +20,8 @@ class Home extends Component {
         }
         this.state = {
             loggedIn: !!token,
-            nowPlaying: { name: 'Not Checked', albumArt: ''}
+            isPlaying : false,
+            nowPlaying: { name: '', albumArt: '', artist : ''}
         }
     }
 
@@ -39,29 +40,27 @@ class Home extends Component {
         spotifyApi.getMyCurrentPlaybackState()
             .then((response) => {
                 this.setState({
+                    isPlaying : response.is_playing,
                     nowPlaying: {
                         name: response.item.name,
-                        albumArt: response.item.album.images[0].url
+                        albumArt: response.item.album.images[0].url,
+                        artist : response.item.artists[0].name
                     }
                 });
+                console.log(response)
             })
             .then( () => {
                 this.searchSong();
             })
-
     }
 
     searchSong() {
-        console.log(secrets.genius_token);
-        console.log(this.state.nowPlaying);
         fetch(`https://api.genius.com/search?q=${this.state.nowPlaying.name}&access_token=${secrets.genius_token}`)
             .then(
                 (json) => {
                     return json.json()
                 }).then(
                     (response) => {
-                        console.log(response.response.hits[0]);
-                        console.log(response.response.hits[0].result.id);
                         this.setState({
                             nowPlaying: {
                                 ...this.state.nowPlaying,
@@ -77,10 +76,9 @@ class Home extends Component {
         console.log(this.state.nowPlaying);
         //fix this hacky fix xd
         request('https://cors-anywhere.herokuapp.com/' + url,function(err,res,body) {
-            console.log(this.state.nowPlaying);
             let html = cheerio.load(body);
             let scrapedLyrics = html('.lyrics').text().split('\n');
-            console.log(scrapedLyrics);
+
             // scrapedLyrics.replace("\n","<br>\n");
             this.setState({
                 nowPlaying: {
@@ -103,7 +101,6 @@ class Home extends Component {
 
     generateLyrics = () => {
         let contents = [];
-
         // Outer loop to create parent
         let lyricsLst = this.state.nowPlaying.scrapedLyrics;
         if (lyricsLst !== undefined) {
@@ -119,30 +116,52 @@ class Home extends Component {
         return (
             <div className="App">
                 <div className="container">
-                    <div className="row">
-                        <div className="col">
-                            <Jumbotron className="justify-content-center">
+                    { this.state.isPlaying &&
+                        <div className="row">
+                            <div className="col">
+                                <Jumbotron>
+                                    <div className="">
+
+                                        <div className='row justify-content-center'>
+                                            <Image src={this.state.nowPlaying.albumArt} style={{ height: 150 }} alt='' />
+                                        </div>
+
+                                        <div className='row justify-content-center'>
+                                            <strong> {this.state.nowPlaying.name} </strong>
+                                        </div>
+
+                                        <div className='row justify-content-center'>
+                                            {this.state.nowPlaying.artist}
+                                        </div>
+
+                                        <div className='row justify-content-center'>
+                                            { this.state.loggedIn &&
+                                            <button className="btn btn-info"  onClick={() => this.getNowPlaying()}>
+                                                Fetch Now Playing
+                                            </button>
+                                            }
+                                        </div>
+                                    </div>
+                                </Jumbotron>
+                            </div>
+                            <div className="col">
                                 <div>
-                                    Now Playing: { this.state.nowPlaying.name }
+                                    {this.generateLyrics()}
                                 </div>
-                                <div>
-                                    <Image src={this.state.nowPlaying.albumArt} style={{ height: 150 }} alt='' />
-                                </div>
-                                <div>
-                                    { this.state.loggedIn &&
-                                    <button className="btn btn-info"  onClick={() => this.getNowPlaying()}>
-                                        Fetch Now Playing
-                                    </button>
-                                    }
-                                </div>
-                            </Jumbotron>
-                        </div>
-                        <div className="col">
-                            <div>
-                                {this.generateLyrics()}
                             </div>
                         </div>
-                    </div>
+                    }
+                    {  !this.state.isPlaying &&
+
+                        <div style={{marginTop: "37%"}}>
+                            { this.state.loggedIn &&
+                            <button className="btn btn-info"  onClick={() => this.getNowPlaying()}>
+                                <strong>Fetch Lyrics</strong>
+                            </button>
+                            }
+                        </div>
+
+                    }
 
                 </div>
 
