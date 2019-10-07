@@ -3,7 +3,8 @@ import './App.css'
 import secrets from './secrets'
 import SpotifyWebApi from 'spotify-web-api-js';
 import cheerio from 'cheerio';
-
+import { Button,Image,Jumbotron } from 'react-bootstrap';
+import 'bootstrap/dist/css/bootstrap.min.css';
 import request from 'request';
 
 const spotifyApi = new SpotifyWebApi();
@@ -19,7 +20,7 @@ class Home extends Component {
         }
         this.state = {
             loggedIn: !!token,
-            nowPlaying: { name: 'Not Checked', albumArt: '', lyrics: '' }
+            nowPlaying: { name: 'Not Checked', albumArt: ''}
         }
     }
 
@@ -78,15 +79,17 @@ class Home extends Component {
         request('https://cors-anywhere.herokuapp.com/' + url,function(err,res,body) {
             console.log(this.state.nowPlaying);
             let html = cheerio.load(body);
-            let scrapedLyrics = html('.lyrics').text().trim();
+            let scrapedLyrics = html('.lyrics').text().split('\n');
+            console.log(scrapedLyrics);
+            // scrapedLyrics.replace("\n","<br>\n");
             this.setState({
                 nowPlaying: {
                     ...this.state.nowPlaying,
                     scrapedLyrics: scrapedLyrics
                 }
             });
+            console.log(this.state.nowPlaying)
         }.bind(this))
-
     }
     getSong() {
         console.log(secrets.genius_token);
@@ -98,29 +101,45 @@ class Home extends Component {
                 }).then(response => console.log(response.response))
     }
 
+    generateLyrics = () => {
+        let contents = [];
+
+        // Outer loop to create parent
+        let lyricsLst = this.state.nowPlaying.scrapedLyrics;
+        if (lyricsLst !== undefined) {
+            for (let i = 0; i < lyricsLst.length; i++) {
+                //Create the parent and add the children
+                contents.push(<p key={i}>{lyricsLst[i]}</p>)
+            }
+            return contents
+        }
+    };
+
     render() {
         return (
             <div className="App">
                 <div className="container">
                     <div className="row">
                         <div className="col">
-                            <div>
-                                Now Playing: { this.state.nowPlaying.name }
-                            </div>
-                            <div>
-                                <img src={this.state.nowPlaying.albumArt} style={{ height: 150 }}/>
-                            </div>
-                            <div>
-                                { this.state.loggedIn &&
-                                <button className="btn btn-info"  onClick={() => this.getNowPlaying()}>
-                                    Fetch Now Playing
-                                </button>
-                                }
-                            </div>
+                            <Jumbotron className="justify-content-center">
+                                <div>
+                                    Now Playing: { this.state.nowPlaying.name }
+                                </div>
+                                <div>
+                                    <Image src={this.state.nowPlaying.albumArt} style={{ height: 150 }} alt='' />
+                                </div>
+                                <div>
+                                    { this.state.loggedIn &&
+                                    <button className="btn btn-info"  onClick={() => this.getNowPlaying()}>
+                                        Fetch Now Playing
+                                    </button>
+                                    }
+                                </div>
+                            </Jumbotron>
                         </div>
                         <div className="col">
                             <div>
-                                {this.state.nowPlaying.scrapedLyrics}
+                                {this.generateLyrics()}
                             </div>
                         </div>
                     </div>
