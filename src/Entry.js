@@ -53,19 +53,17 @@ class Entry extends Component {
 render() {
   return (
     <div className="Entry">
-      <header className="App-header">
       {!this.state.token && (
         <a
           className="btn btn--loginApp-link"
           href={ r }
         >
-          Login to Spotify
+          Login with Spotify
         </a>
       )}
       {this.state.token && (
             <Home />
           )}
-      </header>
     </div>
   );
   }
