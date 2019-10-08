@@ -6,14 +6,6 @@ import querystring from "querystring"
 import hash from "./hash"
 import Home from "./Home";
 
-// function Nav() {
-//     return (
-//         <header className="App-header">
-//             <a href="http://localhost:8888" className="btn btn-primary" role="button">Login with Spotify!</a>
-//         </header>
-//     )
-// }
-
 export const authEndpoint = 'https://accounts.spotify.com/authorize';
 const clientId = secrets.client_id;
 const redirectUri = "http://localhost:3000";
@@ -25,9 +17,7 @@ let r = 'https://accounts.spotify.com/authorize?' +
   client_id: clientId,
   scope: scope,
   redirect_uri: redirectUri,
-  // state: "aaaaaaaaaaaaaaaa"
 })
-
 
 class Entry extends Component {
   constructor() {
