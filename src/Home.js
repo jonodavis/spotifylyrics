@@ -55,7 +55,7 @@ class Home extends Component {
     }
 
     searchSong() {
-        fetch(`https://api.genius.com/search?q=${this.state.nowPlaying.name}&access_token=${secrets.genius_token}`)
+        fetch(`https://api.genius.com/search?q=${this.state.nowPlaying.artist} ${this.state.nowPlaying.name}&access_token=${secrets.genius_token}`)
             .then(
                 (json) => {
                     return json.json()
