@@ -3,9 +3,10 @@ import './App.css'
 import secrets from './secrets'
 import SpotifyWebApi from 'spotify-web-api-js';
 import cheerio from 'cheerio';
-import { Button,Image,Jumbotron } from 'react-bootstrap';
+import { Image } from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import request from 'request';
+
 
 const spotifyApi = new SpotifyWebApi();
 
@@ -23,6 +24,8 @@ class Home extends Component {
             isPlaying : false,
             nowPlaying: { name: '', albumArt: '', artist : ''}
         }
+        console.log(token)
+        window.location.hash = "";
     }
 
     getHashParams() {
