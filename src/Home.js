@@ -39,18 +39,23 @@ class Home extends Component {
     getNowPlaying(){
         spotifyApi.getMyCurrentPlaybackState()
             .then((response) => {
-                this.setState({
-                    isPlaying : response.is_playing,
-                    nowPlaying: {
-                        name: response.item.name,
-                        albumArt: response.item.album.images[0].url,
-                        artist : response.item.artists[0].name
-                    }
-                });
+                if (response.is_playing) {
+                    this.setState({
+                        isPlaying : response.is_playing,
+                        nowPlaying: {
+                            name: response.item.name,
+                            albumArt: response.item.album.images[0].url,
+                            artist : response.item.artists[0].name
+                        }
+                    });
+                }
                 console.log(response)
             })
             .then( () => {
-                this.searchSong();
+                if (this.state.isPlaying) {
+                    this.searchSong();
+                }
+                
             })
     }
 
@@ -119,8 +124,7 @@ class Home extends Component {
                     { this.state.isPlaying &&
                         <div className="row">
                             <div className="col">
-                                <Jumbotron>
-                                    <div className="">
+                                    <div className="now_playing">
 
                                         <div className='row justify-content-center'>
                                             <Image src={this.state.nowPlaying.albumArt} style={{ height: 150 }} alt='' />
@@ -142,7 +146,6 @@ class Home extends Component {
                                             }
                                         </div>
                                     </div>
-                                </Jumbotron>
                             </div>
                             <div className="col">
                                 <div>
