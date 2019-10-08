@@ -20,3 +20,11 @@
 .App-link {
   color: #09d3ac;
 }
+
+.now_playing {
+  position: fixed;
+  padding: 100px;
+  background-color: #eeeeee;
+  border-radius: 8px;
+  margin: 40px 0 0 0;
+}
