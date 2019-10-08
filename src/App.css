@@ -12,8 +12,9 @@ a {
 
 .now_playing {
   position: fixed;
-  padding: 100px;
+  padding: 80px;
   background-color: #eeeeee;
   border-radius: 8px;
   margin: 40px 0 0 0;
+  max-width: 340px;
 }
